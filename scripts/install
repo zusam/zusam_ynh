@@ -107,7 +107,7 @@ ynh_replace_string \
 # generate a random APP_SECRET
 ynh_replace_string \
     --match_string="APP_SECRET=\"\[^\"\]*\"" \
-    --replace_string="APP_SECRET=\"$(tr -dc a-zA-Z0-9 < /dev/urandom | head -c 50)\"" \
+    --replace_string="APP_SECRET=\"$(ynh_string_random)\"" \
     --target_file="$final_path/data/config"
 
 # set the path to ffmpeg binary
@@ -141,14 +141,10 @@ ynh_store_file_checksum --file="$final_path/data/config"
 # SECURE FILES AND DIRECTORIES
 #=================================================
 
-### For security reason, any app should set the permissions to root: before anything else.
-### Then, if write authorization is needed, any access should be given only to directories
-### that really need such authorization.
-
 # Set permissions to app files
 chown -R root: $final_path
 chown -R $app: $final_path/data
-chown -R $app: $final_path/api/var
+#chown -R $app: $final_path/api/var
 
 #=================================================
 # ADVERTISE SERVICE IN ADMIN PANEL
