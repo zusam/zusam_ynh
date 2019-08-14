@@ -10,6 +10,10 @@ source /usr/share/yunohost/helpers
 source ynh_add_extra_apt_repos__3
 source ynh_install_php__3
 
+TMPDIR=/var/tmp
+mkdir -p /var/tmp
+chmod 777 /var/tmp
+
 #=================================================
 # MANAGE SCRIPT FAILURE
 #=================================================

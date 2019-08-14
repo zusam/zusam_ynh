@@ -15,6 +15,9 @@
 # See https://manpages.debian.org/stretch/apt/apt_preferences.5.en.html for information about pinning.
 #
 ynh_pin_repo () {
+
+    [ -z "$TMPDIR" ] && TMPDIR=/tmp
+
     # Declare an array to define the options of this helper.
     local legacy_args=pirna
     declare -Ar args_array=( [p]=package= [i]=pin= [r]=priority= [n]=name= [a]=append )
@@ -255,7 +258,7 @@ ynh_install_app_dependencies () {
         dependencies="$(echo "$dependencies" | sed 's/\([^(\<=\>]\)\([\<=\>]\+\)\([^,]\+\)/\1 (\2 \3)/g')"
     fi
 
-    cat > /tmp/${dep_app}-ynh-deps.control << EOF   # Make a control file for equivs-build
+    cat > $TMPDIR/${dep_app}-ynh-deps.control << EOF   # Make a control file for equivs-build
 Section: misc
 Priority: optional
 Package: ${dep_app}-ynh-deps
@@ -265,9 +268,9 @@ Architecture: all
 Description: Fake package for $app (YunoHost app) dependencies
  This meta-package is only responsible of installing its dependencies.
 EOF
-    ynh_package_install_from_equivs /tmp/${dep_app}-ynh-deps.control \
+    ynh_package_install_from_equivs $TMPDIR/${dep_app}-ynh-deps.control \
         || ynh_die --message="Unable to install dependencies"   # Install the fake package and its dependencies
-    rm /tmp/${dep_app}-ynh-deps.control
+    rm $TMPDIR/${dep_app}-ynh-deps.control
     ynh_app_setting_set --app=$app --key=apt_dependencies --value="$dependencies"
 }
 
