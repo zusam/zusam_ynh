@@ -1,0 +1,88 @@
+{
+    "name": "Zusam",
+    "id": "zusam",
+    "packaging_format": 1,
+    "description": {
+        "en": "A truly private space for you and your friends.",
+        "fr": "Un espace privé pour vous et vos amis."
+    },
+    "version": "0.3.1~ynh1",
+    "url": "https://zusam.org",
+    "license": "AGPL-3.0",
+    "maintainer": {
+        "name": "Niels Robin-Aubertin",
+        "email": "zusam@niels.fr",
+        "url": "http://niels.fr"
+    },
+    "requirements": {
+        "yunohost": ">= 3.6"
+    },
+    "multi_instance": true,
+    "services": [
+        "nginx"
+    ],
+    "arguments": {
+        "install" : [
+            {
+                "name": "domain",
+                "type": "domain",
+                "ask": {
+                    "en": "Choose a domain name for Zusam",
+                    "fr": "Choisissez un nom de domaine pour Zusam"
+                },
+                "example": "example.com"
+            },
+            {
+                "name": "path",
+                "type": "path",
+                "ask": {
+                    "en": "Choose a path for Zusam",
+                    "fr": "Choisissez un chemin pour Zusam"
+                },
+                "example": "/zusam",
+                "default": "/zusam"
+            },
+            {
+                "name": "language",
+                "type": "string",
+                "ask": {
+                    "en": "Choose the application language",
+                    "fr": "Choisissez la langue de l'application"
+                },
+                "choices": ["fr", "en"],
+                "default": "fr"
+            },
+            {
+                "name": "login",
+                "type": "string",
+                "ask": {
+                    "en": "Choose the login of the first user",
+                    "fr": "Choisissez le login du premier utilisateur"
+                },
+                "example": "johndoe@example.com"
+            },
+            {
+                "name": "password",
+                "type": "password",
+                "ask": {
+                    "en": "Set the password of the first user",
+                    "fr": "Définissez le mot de passe du premier utilisateur"
+                },
+                "help": {
+                    "en": "Use the help field to add an information for the admin about this question.",
+                    "fr": "Utilisez le champ aide pour ajouter une information à l'intention de l'administrateur à propos de cette question."
+                },
+                "example": "Choose a password"
+            },
+            {
+                "name": "group",
+                "type": "string",
+                "ask": {
+                    "en": "Choose the name of the first group",
+                    "fr": "Choisissez le login du premier groupe"
+                },
+                "example": "my group"
+            }
+        ]
+    }
+}
