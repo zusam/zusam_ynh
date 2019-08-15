@@ -151,7 +151,7 @@ ynh_composer_exec \
     --commands="install"
 
 # preparing databse
-php7.3 $final_path/api/bin/console zusam:init "$user" "$group" "$password"
+php7.3 $final_path/api/bin/console zusam:init "$login" "$group" "$password"
 
 # ensure that the var directory is present
 mkdir -p "$final_path/api/var"
