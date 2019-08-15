@@ -9,6 +9,7 @@ source _common.sh
 source /usr/share/yunohost/helpers
 source ynh_add_extra_apt_repos__3
 source ynh_install_php__3
+source ynh_composer__2
 
 #=================================================
 # MANAGE SCRIPT FAILURE
@@ -128,7 +129,28 @@ ynh_replace_string \
     --replace_string="LANG=\"$language\"" \
     --target_file="$final_path/data/config"
 
-echo "MAILER_URL=smtp://localhost:25" >> $final_path/data/config
+echo "MAILER_URL=smtp://localhost:25" >> "$final_path/data/config"
+
+#=================================================
+# SPECIFIC SETUP
+#=================================================
+ynh_script_progression --message="Deploying Zusam..." --time --weight=1
+
+# copy webapp files
+cp "$final_path"/app/dist/* "$final_path/public/"
+
+# copy language file
+cp "$final_path/public/$language.js" "$final_path/public/lang.js"
+
+# installing api
+ynh_composer_exec \
+    --phpversion=7.3 \
+    --composer="$final_path/api/bin/composer" \
+    --workdir="$final_path/api/" \
+    --commands="install"
+
+# ensure that the var directory is present
+mkdir -p "$final_path/api/var"
 
 #=================================================
 # STORE THE CONFIG FILE CHECKSUM
@@ -144,7 +166,7 @@ ynh_store_file_checksum --file="$final_path/data/config"
 # Set permissions to app files
 chown -R root: $final_path
 chown -R $app: $final_path/data
-#chown -R $app: $final_path/api/var
+chown -R $app: $final_path/api/var
 
 #=================================================
 # ADVERTISE SERVICE IN ADMIN PANEL

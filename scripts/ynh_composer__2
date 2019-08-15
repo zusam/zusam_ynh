@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# commit 052827f58ef0246e0c06456b0c41104545a45f41
+# from https://github.com/YunoHost-Apps/Experimental_helpers
+
+# Execute a command with Composer
+#
+# usage: ynh_composer_exec --phpversion=phpversion [--workdir=$final_path] [--composer=composer_path] --commands="commands"
+# | arg: -w, --workdir - The directory from where the command will be executed. Default $final_path.
+# | arg: -c, --commands - Commands to execute.
+ynh_composer_exec () {
+    # Declare an array to define the options of this helper.
+    local legacy_args=vwc
+    declare -Ar args_array=( [v]=phpversion= [w]=workdir= [b]=composer= [c]=commands= )
+    local phpversion
+    local workdir
+    local commands
+    local composer_path
+    # Manage arguments with getopts
+    ynh_handle_getopts_args "$@"
+    workdir="${workdir:-$final_path}"
+    composer="${composer:-$workdir/composer.phar}"
+    phpversion="${phpversion:-7.0}"
+
+    COMPOSER_HOME="$workdir/.composer" \
+        php${phpversion} "$composer" $commands \
+        -d "$workdir" --quiet --no-interaction
+}
