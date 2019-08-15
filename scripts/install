@@ -173,22 +173,6 @@ chown -R $app: $final_path/data
 chown -R $app: $final_path/api/var
 
 #=================================================
-# ADVERTISE SERVICE IN ADMIN PANEL
-#=================================================
-
-### `yunohost service add` is a CLI yunohost command to add a service in the admin panel.
-### You'll find the service in the 'services' section of YunoHost admin panel.
-### This CLI command would be useless if the app does not have any services (systemd or sysvinit)
-### If you're not using these lines:
-###     - You can remove these files in conf/.
-###     - Remove the section "REMOVE SERVICE FROM ADMIN PANEL" in the remove script
-###     - As well as the section "ADVERTISE SERVICE IN ADMIN PANEL" in the restore script
-
-yunohost service add $app --log "/var/log/$app/$app.log"
-# if using yunohost version 3.2 or more in the 'manifest.json', a description can be added
-#yunohost service add $app --description "$app daemon for XXX" --log "/var/log/$app/$app.log"
-
-#=================================================
 # SETUP SSOWAT
 #=================================================
 ynh_script_progression --message="Configuring SSOwat..." --time --weight=15
