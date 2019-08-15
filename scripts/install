@@ -27,7 +27,8 @@ ynh_abort_if_errors
 #=================================================
 
 domain=$YNH_APP_ARG_DOMAIN
-path_url=$YNH_APP_ARG_PATH
+#path_url=$YNH_APP_ARG_PATH
+path_url="/"
 is_public=1 # true
 language=$YNH_APP_ARG_LANGUAGE
 password=$YNH_APP_ARG_PASSWORD
@@ -148,6 +149,9 @@ ynh_composer_exec \
     --composer="$final_path/api/bin/composer" \
     --workdir="$final_path/api/" \
     --commands="install"
+
+# preparing databse
+php7.3 $final_path/api/bin/console zusam:init "$user" "$group" "$password"
 
 # ensure that the var directory is present
 mkdir -p "$final_path/api/var"
