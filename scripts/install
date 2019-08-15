@@ -59,20 +59,20 @@ ynh_app_setting_set --app=$app --key=language --value=$language
 ynh_script_progression --message="Installing general dependencies..." --time --weight=1
 ynh_install_app_dependencies $pkg_dependencies
 
-ynh_script_progression --message="Installing php and php extensions..." --time --weight=1
+ynh_script_progression --message="Installing php and php extensions..." --time --weight=50
 ynh_install_php --phpversion="$php_version" --package="$php_extensions"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_script_progression --message="Setting up source files..." --time --weight=1
+ynh_script_progression --message="Setting up source files..." --time --weight=100
 ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 ynh_setup_source --dest_dir="$final_path"
 
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring nginx web server..." --time --weight=1
+ynh_script_progression --message="Configuring nginx web server..." --time --weight=3
 ynh_add_nginx_config
 
 #=================================================
@@ -84,7 +84,7 @@ ynh_system_user_create --username=$app
 #=================================================
 # PHP-FPM CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring php-fpm..." --time --weight=1
+ynh_script_progression --message="Configuring php-fpm..." --time --weight=3
 ynh_add_fpm_config
 
 #=================================================
@@ -191,7 +191,7 @@ yunohost service add $app --log "/var/log/$app/$app.log"
 #=================================================
 # SETUP SSOWAT
 #=================================================
-ynh_script_progression --message="Configuring SSOwat..." --time --weight=1
+ynh_script_progression --message="Configuring SSOwat..." --time --weight=15
 
 # Make app public if necessary
 if [ $is_public -eq 1 ]
