@@ -12,3 +12,16 @@ php_extensions="php$php_version-curl php$php_version-imagick php$php_version-int
 #=================================================
 # PERSONAL HELPERS
 #=================================================
+
+
+#=================================================
+# EXPERIMENTAL HELPERS
+#=================================================
+
+source ynh_add_extra_apt_repos__3
+source ynh_install_php__3
+source ynh_composer__2
+
+#=================================================
+# FUTURE OFFICIAL HELPERS
+#=================================================
