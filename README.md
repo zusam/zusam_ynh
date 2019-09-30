@@ -9,8 +9,8 @@ The goal is to make a stable, extensible, lightweight and user-friendly way to s
 
 ## Links
 
- * Report a bug about this package: https://github.com//zusam_ynh
- * Report a bug about Weblate itself: https://github.com/nrobinaubertin/zusam_ynh
+ * Report a bug about this package: https://github.com/nrobinaubertin/zusam_ynh
+ * Report a bug about Zusam itself: https://github.com/zusam/zusam
  * Documentation: https://github.com/zusam/zusam/tree/master/documentation
- * Weblate website: https://zusam.org
+ * Zusam's website: https://zusam.org
  * YunoHost website: https://yunohost.org
