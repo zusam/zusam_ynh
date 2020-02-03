@@ -6,13 +6,13 @@
         "en": "A truly private space for you and your friends.",
         "fr": "Un espace privé pour vous et vos amis."
     },
-    "version": "0.3.1~ynh2",
+    "version": "0.4~ynh1",
     "url": "https://zusam.org",
     "license": "AGPL-3.0",
     "maintainer": {
         "name": "Niels Robin-Aubertin",
         "email": "zusam@niels.fr",
-        "url": "http://niels.fr"
+        "url": "https://niels.fr"
     },
     "requirements": {
         "yunohost": ">= 3.6"
@@ -30,7 +30,17 @@
                     "en": "Choose a domain name for Zusam",
                     "fr": "Choisissez un nom de domaine pour Zusam"
                 },
-                "example": "example.com"
+                "example": "domain.example"
+            },
+            {
+                "name": "path",
+                "type": "path",
+                "ask": {
+                    "en": "Choose a path for Zusam",
+                    "fr": "Choisissez un chemin pour Zusam"
+                },
+                "example": "/zusam",
+                "default": "/zusam"
             },
             {
                 "name": "language",
@@ -39,8 +49,8 @@
                     "en": "Choose the application language",
                     "fr": "Choisissez la langue de l'application"
                 },
-                "choices": ["fr", "en"],
-                "default": "fr"
+                "choices": ["fr", "en", "es"],
+                "default": "en"
             },
             {
                 "name": "login",
@@ -49,7 +59,7 @@
                     "en": "Choose the login of the first user",
                     "fr": "Choisissez le login du premier utilisateur"
                 },
-                "example": "johndoe@example.com"
+                "example": "johndoe@domain.example"
             },
             {
                 "name": "password",
@@ -57,10 +67,6 @@
                 "ask": {
                     "en": "Set the password of the first user",
                     "fr": "Définissez le mot de passe du premier utilisateur"
-                },
-                "help": {
-                    "en": "Use the help field to add an information for the admin about this question.",
-                    "fr": "Utilisez le champ aide pour ajouter une information à l'intention de l'administrateur à propos de cette question."
                 },
                 "example": "Choose a password"
             },

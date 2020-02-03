@@ -1,6 +1,6 @@
-SOURCE_URL=https://github.com/nrobinaubertin/zusam/archive/0.3.1.tar.gz
-SOURCE_SUM=42f67fc44add399fec75928914f5686fa1dab09667ba06ed5d289c84e2aeb673
+SOURCE_URL=https://github.com/zusam/zusam/archive/0.4.zip
 SOURCE_SUM_PRG=sha256sum
-SOURCE_FORMAT=tar.gz
+SOURCE_FORMAT=zip
 SOURCE_IN_SUBDIR=true
-SOURCE_FILENAME=zusam_0.3.1.tar.gz
+SOURCE_FILENAME=0.4.zip
+SOURCE_SUM=6ebb55c6c1fac455e1477b7aef0ba1b6259f98a43482c2ee5beef4bac6fc6df2
