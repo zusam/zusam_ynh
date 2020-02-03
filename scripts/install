@@ -161,6 +161,7 @@ ynh_store_file_checksum --file="$final_path/data/config"
 chown -R root: $final_path
 chown -R $app: $final_path/data
 chown -R $app: $final_path/api/var
+chown -R $app: $final_path/public
 
 #=================================================
 # SETUP SSOWAT
