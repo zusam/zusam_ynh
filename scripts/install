@@ -131,7 +131,7 @@ echo "MAILER_URL=smtp://localhost:25" >> "$final_path/data/config"
 ynh_script_progression --message="Deploying Zusam..." --time --weight=1
 
 # copy webapp files
-cp "$final_path"/app/dist/* "$final_path/public/"
+cp -r "$final_path"/app/dist/* "$final_path/public/"
 
 # installing api
 ynh_composer_exec \
