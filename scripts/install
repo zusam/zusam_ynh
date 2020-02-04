@@ -145,6 +145,12 @@ ynh_replace_string \
     --replace_string="<base href=\"/$path_url/\">" \
     --target_file="$final_path/public/index.html"
 
+# set the default lang of the webapp
+ynh_replace_string \
+    --match_string="<meta name=\"zusam:default-lang\" content=\"en\">" \
+    --replace_string="<meta name=\"zusam:default-lang\" content=\"$language\">" \
+    --target_file="$final_path/public/index.html"
+
 # preparing databse
 php7.3 $final_path/api/bin/console zusam:init "$YNH_APP_ARG_LOGIN" "$YNH_APP_ARG_GROUP" "$YNH_APP_ARG_PASSWORD"
 
