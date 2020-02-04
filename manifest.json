@@ -77,16 +77,8 @@
                     "en": "Choose the name of the first group",
                     "fr": "Choisissez le login du premier groupe"
                 },
-                "example": "my group"
-            },
-            {
-                "name": "is_public",
-                "type": "boolean",
-                "ask": {
-                    "en": "Is it a public website ?",
-                    "fr": "Est-ce un site public ?"
-                },
-                "default": true
+                "example": "my group",
+                "default": "my group"
             }
         ]
     }
