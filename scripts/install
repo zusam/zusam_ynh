@@ -47,6 +47,12 @@ path_url="$(ynh_normalize_url_path --path_url="$path_url")"
 # Remove leading "/"
 path_name="$(str_remove_leading "$path_url" '\/')"
 
+# Standard yunohost paths
+nginx_config_path="/etc/nginx/conf.d/$domain.d/$app.conf"
+php_fpm_config_path="/etc/php/$phpversion/fpm/pool.d/$app.conf"
+fail2ban_jail_path="/etc/fail2ban/jail.d/$app.conf"
+fail2ban_filter_path="/etc/fail2ban/filter.d/$app.conf"
+
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
