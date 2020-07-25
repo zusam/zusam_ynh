@@ -132,16 +132,10 @@ ynh_script_progression --message="Deploying Zusam..." --time --weight=1
 # copy webapp files
 cp -r "$final_path"/app/dist/* "$final_path/public/"
 
-# install composer
+# install composer and api dependencies
 ynh_install_composer \
     --phpversion="$YNH_PHP_VERSION" \
-    --workdir="$final_path/api/bin/"
-
-# install api dependencies
-ynh_composer_exec \
-    --phpversion="$YNH_PHP_VERSION" \
-    --workdir="$final_path/api/" \
-    --commands="install"
+    --workdir="$final_path/api"
 
 # set the PATH of the webapp
 ynh_replace_string \
