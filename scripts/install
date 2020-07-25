@@ -19,22 +19,25 @@ ynh_abort_if_errors
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
 
-domain=$YNH_APP_ARG_DOMAIN
-path_url=$YNH_APP_ARG_PATH
+app="$YNH_APP_INSTANCE_NAME"
+domain="$YNH_APP_ARG_DOMAIN"
+path_url="$YNH_APP_ARG_PATH"
 is_public=1 # true
-language=$YNH_APP_ARG_LANGUAGE
-password=$YNH_APP_ARG_PASSWORD
-app=$YNH_APP_INSTANCE_NAME
+language="$YNH_APP_ARG_LANGUAGE"
 
-#=================================================
-# PROCESS ARGUMENTS
-#=================================================
+phpversion="7.3"
 
-if [ "$(echo "$path_url" | cut -c1)" = "/" ]; then
-  normalized_path_url="$(echo "$path_url" | cut -c2-)"
-else
-  normalized_path_url="$path_url"
-fi
+# necessary for the official php helper
+YNH_PHP_VERSION="$phpversion"
+
+# php dependencies
+php_extensions="php$phpversion-curl php$phpversion-imagick php$phpversion-intl php$phpversion-mbstring php$phpversion-sqlite3 php$phpversion-xml"
+
+# Normalize the URL path syntax
+path_url="$(ynh_normalize_url_path --path_url="$path_url")"
+
+# Remove leading "/"
+path_name="$(str_remove_leading "$path_url" '\/')"
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
@@ -43,32 +46,33 @@ ynh_script_progression --message="Validating installation parameters..." --time 
 
 final_path=/var/www/$app
 test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
-ynh_webpath_register --app=$app --domain=$domain --path_url=$path_url
+ynh_webpath_register --app="$app" --domain="$domain" --path_url="$path_url"
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
 ynh_script_progression --message="Storing installation settings..." --time --weight=1
 
-ynh_app_setting_set --app=$app --key=domain --value=$domain
-ynh_app_setting_set --app=$app --key=path --value=$path_url
-ynh_app_setting_set --app=$app --key=is_public --value=$is_public
-ynh_app_setting_set --app=$app --key=language --value=$language
+ynh_app_setting_set --app="$app" --key=domain --value="$domain"
+ynh_app_setting_set --app="$app" --key=path --value="$path_url"
+ynh_app_setting_set --app="$app" --key=is_public --value="$is_public"
+ynh_app_setting_set --app="$app" --key=language --value="$language"
+ynh_app_setting_set --app="$app" --key=phpversion --value="$phpversion"
 
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
 ynh_script_progression --message="Installing general dependencies..." --time --weight=1
-ynh_install_app_dependencies $pkg_dependencies
+ynh_install_app_dependencies "$pkg_dependencies"
 
 ynh_script_progression --message="Installing php and php extensions..." --time --weight=50
-ynh_install_php --phpversion="$YNH_PHP_VERSION" --package="$php_extensions"
+ynh_install_php --phpversion="$phpversion" --package="$php_extensions"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression --message="Setting up source files..." --time --weight=100
-ynh_app_setting_set --app=$app --key=final_path --value=$final_path
+ynh_app_setting_set --app="$app" --key=final_path --value="$final_path"
 ynh_setup_source --dest_dir="$final_path"
 
 #=================================================
@@ -81,7 +85,7 @@ ynh_add_nginx_config
 # CREATE DEDICATED USER
 #=================================================
 ynh_script_progression --message="Configuring system user..." --time --weight=1
-ynh_system_user_create --username=$app
+ynh_system_user_create --username="$app"
 
 #=================================================
 # PHP-FPM CONFIGURATION
@@ -95,7 +99,7 @@ ynh_add_fpm_config
 ynh_script_progression --message="Copying default config..." --time --weight=1
 
 # Copy the general .env file as a starter config file
-cp $final_path/api/.env $final_path/data/config
+cp "$final_path/api/.env" "$final_path/data/config"
 
 #=================================================
 # MODIFY A CONFIG FILE
@@ -144,7 +148,7 @@ cp -r "$final_path"/app/dist/* "$final_path/public/"
 
 # install api dependencies
 ynh_composer_exec \
-    --phpversion="$YNH_PHP_VERSION" \
+    --phpversion="$phpversion" \
     --workdir="$final_path/api/" \
     --composer="$final_path/api/bin/composer" \
     --commands="install"
@@ -152,7 +156,7 @@ ynh_composer_exec \
 # set the PATH of the webapp
 ynh_replace_string \
     --match_string="<base href=\"/\">" \
-    --replace_string="<base href=\"/$normalized_path_url/\">" \
+    --replace_string="<base href=\"/$path_name/\">" \
     --target_file="$final_path/public/index.html"
 
 # set the default lang of the webapp
@@ -162,7 +166,7 @@ ynh_replace_string \
     --target_file="$final_path/public/index.html"
 
 # preparing databse
-php${YNH_PHP_VERSION} $final_path/api/bin/console zusam:init "$YNH_APP_ARG_LOGIN" "$YNH_APP_ARG_GROUP" "$YNH_APP_ARG_PASSWORD"
+"php${phpversion}" "$final_path/api/bin/console" zusam:init "$YNH_APP_ARG_LOGIN" "$YNH_APP_ARG_GROUP" "$YNH_APP_ARG_PASSWORD"
 
 # ensure that the var directory is present
 mkdir -p "$final_path/api/var"
@@ -178,11 +182,7 @@ ynh_store_file_checksum --file="$final_path/data/config"
 # SECURE FILES AND DIRECTORIES
 #=================================================
 
-# Set permissions to app files
-chown -R root: $final_path
-chown -R www-data: $final_path/data
-chown -R www-data: $final_path/api/var
-chown -R www-data: $final_path/public
+set_app_permissions
 
 #=================================================
 # SETUP SSOWAT
@@ -193,13 +193,15 @@ ynh_script_progression --message="Configuring SSOwat..." --time --weight=15
 if [ $is_public -eq 1 ]
 then
     # unprotected_uris allows SSO credentials to be passed anyway.
-    ynh_app_setting_set --app=$app --key=unprotected_uris --value="/"
+    ynh_app_setting_set --app="$app" --key=unprotected_uris --value="/"
 fi
 
 #=================================================
-# RELOAD NGINX
+# RELOAD NGINX AND PHP-FPM
 #=================================================
-ynh_script_progression --message="Reloading nginx web server..." --time --weight=1
+ynh_script_progression --message="Reloading nginx web server and php-fpm..." --weight=2
+
+ynh_systemd_action --service_name=php${phpversion}-fpm --action=reload
 ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
