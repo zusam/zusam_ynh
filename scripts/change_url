@@ -24,15 +24,11 @@ app=$YNH_APP_INSTANCE_NAME
 #=================================================
 # LOAD SETTINGS
 #=================================================
-ynh_script_progression --message="Loading installation settings..." --time --weight=1
 
-# Needed for helper "ynh_add_nginx_config"
-final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+load_app_settings
 
-# Add settings here as needed by your application
-#db_name=$(ynh_app_setting_get --app=$app --key=db_name)
-#db_user=$db_name
-#db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)
+new_path_url="$(ynh_normalize_url_path --path_url=$new_path_url)"
+new_normalized_path_url="$(str_remove_leading "$new_path_url" '\/')"
 
 #=================================================
 # CHECK WHICH PARTS SHOULD BE CHANGED
@@ -83,11 +79,23 @@ fi
 # SPECIFIC MODIFICATIONS
 #=================================================
 
-# set the domain
-ynh_replace_string \
-    --match_string="DOMAIN=\"\[^\"\]*\"" \
-    --replace_string="DOMAIN=\"$new_domain\"" \
-    --target_file="$final_path/data/config"
+if [ $change_domain -eq 1 ]
+then
+  # set the domain
+  ynh_replace_string \
+      --match_string="DOMAIN=\"\[^\"\]*\"" \
+      --replace_string="DOMAIN=\"$new_domain\"" \
+      --target_file="$final_path/data/config"
+fi
+
+if [ $change_path -eq 1 ]
+then
+  # set the PATH of the webapp
+  ynh_replace_string \
+      --match_string="<base href=\"/\">" \
+      --replace_string="<base href=\"/$new_normalized_path_url/\">" \
+      --target_file="$final_path/public/index.html"
+fi
 
 #=================================================
 # GENERIC FINALISATION
