@@ -16,4 +16,87 @@ source /usr/share/yunohost/helpers
 # Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
 
-ynh_die  --message= "not implemented"
+#=================================================
+# LOAD SETTINGS
+#=================================================
+
+load_app_settings
+
+#=================================================
+# CHECK IF THE APP CAN BE RESTORED
+#=================================================
+ynh_script_progression --message="Validating restoration parameters..." --weight=2
+
+ynh_webpath_available --domain="$domain" --path_url="$path_url" \
+  || ynh_die --message="Path not available: ${domain}${path_url}"
+    test ! -d "$final_path" \
+  || ynh_die --message="There is already a directory: $final_path "
+
+#=================================================
+# STANDARD RESTORATION STEPS
+#=================================================
+# RESTORE THE NGINX CONFIGURATION
+#=================================================
+
+ynh_restore_file --origin_path="$nginx_config_path"
+
+#=================================================
+# RESTORE THE APP MAIN DIR
+#=================================================
+ynh_script_progression --message="Restoring the app main directory..."
+
+ynh_restore_file --origin_path="$final_path"
+
+#=================================================
+# RECREATE THE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Recreating the dedicated system user..." --weight=3
+
+# Create the dedicated user (if not existing)
+ynh_system_user_create --username="$app"
+
+#=================================================
+# RESTORE USER RIGHTS
+#=================================================
+
+set_app_permissions
+
+#=================================================
+# RESTORE THE PHP-FPM CONFIGURATION
+#=================================================
+
+ynh_restore_file --origin_path="$php_fpm_config_path"
+
+#=================================================
+# SPECIFIC RESTORATION
+#=================================================
+# REINSTALL DEPENDENCIES
+#=================================================
+ynh_script_progression --message="Reinstalling dependencies..." --weight=13
+
+ynh_install_app_dependencies "$pkg_dependencies"
+
+#=================================================
+# RESTORE FAIL2BAN CONFIGURATION
+#=================================================
+ynh_script_progression --message="Restoring the fail2ban configuration..." --weight=8
+
+ynh_restore_file "$fail2ban_jail_path"
+ynh_restore_file "$fail2ban_filter_path"
+ynh_systemd_action --action=restart --service_name=fail2ban
+
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
+# RELOAD NGINX AND PHP-FPM
+#=================================================
+ynh_script_progression --message="Reloading nginx web server and php-fpm..." --weight=2
+
+ynh_systemd_action --service_name="php${phpversion}-fpm" --action=reload
+ynh_systemd_action --service_name=nginx --action=reload
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Restoration completed for $app" --last
