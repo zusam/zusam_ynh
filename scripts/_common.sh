@@ -21,7 +21,7 @@ php_extensions="php$YNH_PHP_VERSION-curl php$YNH_PHP_VERSION-imagick php$YNH_PHP
 # EXPERIMENTAL HELPERS
 #=================================================
 
-source ynh_composer__2
+source composer
 
 #=================================================
 # FUTURE OFFICIAL HELPERS
