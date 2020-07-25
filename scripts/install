@@ -20,6 +20,7 @@ ynh_abort_if_errors
 #=================================================
 
 app="$YNH_APP_INSTANCE_NAME"
+
 domain="$YNH_APP_ARG_DOMAIN"
 path_url="$YNH_APP_ARG_PATH"
 is_public=1 # true
@@ -31,7 +32,14 @@ phpversion="7.3"
 YNH_PHP_VERSION="$phpversion"
 
 # php dependencies
-php_extensions="php$phpversion-curl php$phpversion-imagick php$phpversion-intl php$phpversion-mbstring php$phpversion-sqlite3 php$phpversion-xml"
+php_extensions="\
+  php$phpversion-curl \
+  php$phpversion-imagick \
+  php$phpversion-intl \
+  php$phpversion-mbstring \
+  php$phpversion-sqlite3 \
+  php$phpversion-xml \
+"
 
 # Normalize the URL path syntax
 path_url="$(ynh_normalize_url_path --path_url="$path_url")"
@@ -80,6 +88,7 @@ ynh_setup_source --dest_dir="$final_path"
 #=================================================
 ynh_script_progression --message="Configuring nginx web server..." --time --weight=3
 ynh_add_nginx_config
+ynh_replace_string --match_string="__PHPVERSION__" --replace_string="$phpversion" --target_file="$nginx_config_path"
 
 #=================================================
 # CREATE DEDICATED USER

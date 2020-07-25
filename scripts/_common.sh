@@ -36,6 +36,19 @@ load_app_settings() {
   language="$(ynh_app_setting_get --app="$app" --key=language)"
   phpversion="$(ynh_app_setting_get --app="$app" --key=phpversion)"
 
+  # necessary for the official php helper
+  YNH_PHP_VERSION="$phpversion"
+
+  # php dependencies
+  php_extensions="\
+    php$phpversion-curl \
+    php$phpversion-imagick \
+    php$phpversion-intl \
+    php$phpversion-mbstring \
+    php$phpversion-sqlite3 \
+    php$phpversion-xml \
+  "
+
   # Normalize the URL path syntax
   path_url="$(ynh_normalize_url_path --path_url="$path_url")"
 
