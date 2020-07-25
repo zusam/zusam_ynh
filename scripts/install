@@ -52,7 +52,7 @@ ynh_script_progression --message="Installing general dependencies..." --time --w
 ynh_install_app_dependencies $pkg_dependencies
 
 ynh_script_progression --message="Installing php and php extensions..." --time --weight=50
-ynh_install_php --phpversion="$php_version" --package="$php_extensions"
+ynh_install_php --phpversion="$YNH_PHP_VERSION" --package="$php_extensions"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE

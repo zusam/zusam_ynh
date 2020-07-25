@@ -4,22 +4,23 @@
 # COMMON VARIABLES
 #=================================================
 
-# dependencies used by the app
+# official variable for packages to add
 pkg_dependencies="unzip ffmpeg"
-php_version="7.3"
-php_extensions="php$php_version-curl php$php_version-imagick php$php_version-intl php$php_version-mbstring php$php_version-sqlite3 php$php_version-xml"
+
+# necessary for the official php helper
+YNH_PHP_VERSION=7.3
+
+# php dependencies
+php_extensions="php$YNH_PHP_VERSION-curl php$YNH_PHP_VERSION-imagick php$YNH_PHP_VERSION-intl php$YNH_PHP_VERSION-mbstring php$YNH_PHP_VERSION-sqlite3 php$YNH_PHP_VERSION-xml"
 
 #=================================================
 # PERSONAL HELPERS
 #=================================================
 
-
 #=================================================
 # EXPERIMENTAL HELPERS
 #=================================================
 
-source ynh_add_extra_apt_repos__3
-source ynh_install_php__3
 source ynh_composer__2
 
 #=================================================
