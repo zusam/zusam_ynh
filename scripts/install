@@ -27,6 +27,16 @@ password=$YNH_APP_ARG_PASSWORD
 app=$YNH_APP_INSTANCE_NAME
 
 #=================================================
+# PROCESS ARGUMENTS
+#=================================================
+
+if [ "$(echo "$path_url" | cut -c1)" = "/" ]; then
+  normalized_path_url="$(echo "$path_url" | cut -c2-)"
+else
+  normalized_path_url="$path_url"
+fi
+
+#=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
 ynh_script_progression --message="Validating installation parameters..." --time --weight=1
@@ -142,7 +152,7 @@ ynh_composer_exec \
 # set the PATH of the webapp
 ynh_replace_string \
     --match_string="<base href=\"/\">" \
-    --replace_string="<base href=\"/$path_url/\">" \
+    --replace_string="<base href=\"/$normalized_path_url/\">" \
     --target_file="$final_path/public/index.html"
 
 # set the default lang of the webapp
@@ -152,7 +162,7 @@ ynh_replace_string \
     --target_file="$final_path/public/index.html"
 
 # preparing databse
-php7.3 $final_path/api/bin/console zusam:init "$YNH_APP_ARG_LOGIN" "$YNH_APP_ARG_GROUP" "$YNH_APP_ARG_PASSWORD"
+php${YNH_PHP_VERSION} $final_path/api/bin/console zusam:init "$YNH_APP_ARG_LOGIN" "$YNH_APP_ARG_GROUP" "$YNH_APP_ARG_PASSWORD"
 
 # ensure that the var directory is present
 mkdir -p "$final_path/api/var"
