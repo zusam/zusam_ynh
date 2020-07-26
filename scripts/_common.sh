@@ -24,10 +24,6 @@ str_remove_trailing() {
 load_app_settings() {
   ynh_script_progression --message="Loading installation settings..." --weight=1
 
-  if [ -z "$YHN_APP_INSTANCE_NAME" ]; then
-    ynh_die --message="YHN_APP_INSTANCE_NAME is not defined. ($YNH_APP_INSTANCE_NAME)"
-  fi
-
   app="$YNH_APP_INSTANCE_NAME"
 
   final_path="$(ynh_app_setting_get --app="$app" --key=final_path)"
