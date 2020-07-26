@@ -5,7 +5,7 @@
 #=================================================
 
 # official variable for app dependencies
-pkg_dependencies="unzip ffmpeg"
+pkg_dependencies="unzip ffmpeg sqlite3"
 
 #=================================================
 # PERSONAL HELPERS
@@ -25,6 +25,7 @@ load_app_settings() {
   ynh_script_progression --message="Loading installation settings..." --weight=1
 
   app="$YNH_APP_INSTANCE_NAME"
+  version="$(ynh_app_upstream_version)"
 
   final_path="$(ynh_app_setting_get --app="$app" --key=final_path)"
   path_url="$(ynh_app_setting_get --app="$app" --key=path_url)"

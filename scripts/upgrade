@@ -16,4 +16,129 @@ source /usr/share/yunohost/helpers
 # Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
 
-ynh_die  --message= "not implemented"
+#=================================================
+# LOAD SETTINGS
+#=================================================
+
+load_app_settings
+
+#=================================================
+# CHECK VERSION
+#=================================================
+
+upgrade_type=$(ynh_check_app_version_changed)
+
+#=================================================
+# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
+#=================================================
+ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=5
+
+# Backup the current version of the app
+ynh_backup_before_upgrade
+ynh_clean_setup () {
+  # restore it if the upgrade fails
+  ynh_restore_upgradebackup
+}
+
+#=================================================
+# STANDARD UPGRADE STEPS
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
+
+if [ "$upgrade_type" == "UPGRADE_APP" ]
+then
+  ynh_script_progression --message="Upgrading source files..." --weight=3
+
+  # Download, check integrity, uncompress and patch the source from app.src
+  ynh_setup_source --dest_dir="$final_path"
+fi
+
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Making sure dedicated system user exists..."
+ynh_system_user_create --username="$app"
+
+#=================================================
+# NGINX CONFIGURATION
+#=================================================
+ynh_script_progression --message="Upgrading nginx web server configuration..." --weight=2
+ynh_add_nginx_config
+
+#=================================================
+# UPGRADE DEPENDENCIES
+#=================================================
+ynh_script_progression --message="Upgrading dependencies..." --weight=6
+ynh_install_app_dependencies "$pkg_dependencies"
+
+ynh_script_progression --message="Installing php and php extensions..." --time --weight=50
+ynh_install_php --phpversion="$phpversion" --package="$php_extensions"
+
+#=================================================
+# PHP-FPM CONFIGURATION
+#=================================================
+ynh_script_progression --message="Upgrading php-fpm configuration..."
+ynh_add_fpm_config --phpversion="$phpversion" --package="$php_extensions"
+
+#=================================================
+# SPECIFIC UPGRADE
+#=================================================
+# UPGRADE ZUSAM
+#=================================================
+ynh_script_progression --message="Upgrading zusam..." --weight=2
+
+# database migration
+if [ -f "$final_path/api/migrations/$version.sql" ]; then
+  sqlite3 "$final_path/data/data.db" < "$final_path/api/migrations/$version.sql"
+fi
+
+# install api dependencies
+ynh_composer_exec \
+    --phpversion="$phpversion" \
+    --workdir="$final_path/api/" \
+    --composer="$final_path/api/bin/composer" \
+    --commands="install"
+
+# copy webapp files
+cp -r "$final_path"/app/dist/* "$final_path/public/"
+
+# ensure that the var directory is present
+mkdir -p "$final_path/api/var"
+
+# remove some extra files
+rm -rf "$final_path"/{readme,documentation,container,app}
+
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
+# SECURE FILES AND DIRECTORIES
+#=================================================
+
+set_app_permissions
+
+#=================================================
+# SETUP SSOWAT
+#=================================================
+ynh_script_progression --message="Upgrading SSOwat configuration..." --weight=2
+
+# Make app public if necessary
+if [ $is_public -eq 1 ]
+then
+    # unprotected_uris allows SSO credentials to be passed anyway.
+    ynh_app_setting_set --app="$app" --key=unprotected_uris --value="/"
+fi
+
+#=================================================
+# RELOAD NGINX AND PHP-FPM
+#=================================================
+ynh_script_progression --message="Reloading nginx web server and php-fpm..." --weight=2
+
+ynh_systemd_action --service_name=php${phpversion}-fpm --action=reload
+ynh_systemd_action --service_name=nginx --action=reload
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Installation of $app completed" --last
