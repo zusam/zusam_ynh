@@ -25,7 +25,7 @@ load_app_settings() {
   ynh_script_progression --message="Loading installation settings..." --weight=1
 
   if [ -z "$YHN_APP_INSTANCE_NAME" ]; then
-    ynh_die --message="YHN_APP_INSTANCE_NAME is not defined."
+    ynh_die --message="YHN_APP_INSTANCE_NAME is not defined. ($YNH_APP_INSTANCE_NAME)"
   fi
 
   app="$YNH_APP_INSTANCE_NAME"
