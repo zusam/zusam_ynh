@@ -10,6 +10,12 @@ source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
+# EXPERIMENTAL HELPERS
+#=================================================
+
+source ../settings/scripts/composer
+
+#=================================================
 # MANAGE SCRIPT FAILURE
 #=================================================
 
@@ -56,12 +62,6 @@ ynh_script_progression --message="Recreating the dedicated system user..." --wei
 ynh_system_user_create --username="$app"
 
 #=================================================
-# RESTORE USER RIGHTS
-#=================================================
-
-set_app_permissions
-
-#=================================================
 # RESTORE THE PHP-FPM CONFIGURATION
 #=================================================
 
@@ -73,8 +73,23 @@ ynh_restore_file --origin_path="$php_fpm_config_path"
 # REINSTALL DEPENDENCIES
 #=================================================
 ynh_script_progression --message="Reinstalling dependencies..." --weight=13
-
 ynh_install_app_dependencies "$pkg_dependencies"
+
+ynh_script_progression --message="Installing php and php extensions..." --time --weight=50
+ynh_install_php --phpversion="$phpversion" --package="$php_extensions"
+
+# install api dependencies
+ynh_composer_exec \
+    --phpversion="$phpversion" \
+    --workdir="$final_path/api/" \
+    --composer="$final_path/api/bin/composer" \
+    --commands="install"
+
+#=================================================
+# RESTORE USER RIGHTS
+#=================================================
+
+set_app_permissions
 
 #=================================================
 # RESTORE FAIL2BAN CONFIGURATION
