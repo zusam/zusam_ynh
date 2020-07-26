@@ -27,6 +27,7 @@ load_app_settings() {
   app="$YNH_APP_INSTANCE_NAME"
 
   final_path="$(ynh_app_setting_get --app="$app" --key=final_path)"
+  path_url="$(ynh_app_setting_get --app="$app" --key=path_url)"
   domain="$(ynh_app_setting_get --app="$app" --key=domain)"
   is_public="$(ynh_app_setting_get --app="$app" --key=is_public)"
   language="$(ynh_app_setting_get --app="$app" --key=language)"
@@ -59,7 +60,6 @@ load_app_settings() {
 }
 
 set_app_permissions() {
-
   if [ -z "$final_path" ]; then
     ynh_die --message="final_path is not defined."
   fi
@@ -70,9 +70,3 @@ set_app_permissions() {
   chown -R www-data: "$final_path/api/var"
   chown -R www-data: "$final_path/public"
 }
-
-#=================================================
-# EXPERIMENTAL HELPERS
-#=================================================
-
-source composer

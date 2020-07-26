@@ -9,6 +9,12 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
+# EXPERIMENTAL HELPERS
+#=================================================
+
+source composer
+
+#=================================================
 # MANAGE SCRIPT FAILURE
 #=================================================
 
@@ -70,7 +76,7 @@ ynh_webpath_register --app="$app" --domain="$domain" --path_url="$path_url"
 ynh_script_progression --message="Storing installation settings..." --time --weight=1
 
 ynh_app_setting_set --app="$app" --key=domain --value="$domain"
-ynh_app_setting_set --app="$app" --key=path --value="$path_url"
+ynh_app_setting_set --app="$app" --key=path_url --value="$path_url"
 ynh_app_setting_set --app="$app" --key=is_public --value="$is_public"
 ynh_app_setting_set --app="$app" --key=language --value="$language"
 ynh_app_setting_set --app="$app" --key=phpversion --value="$phpversion"
@@ -96,7 +102,6 @@ ynh_setup_source --dest_dir="$final_path"
 #=================================================
 ynh_script_progression --message="Configuring nginx web server..." --time --weight=3
 ynh_add_nginx_config
-#ynh_replace_string --match_string="__PHPVERSION__" --replace_string="$phpversion" --target_file="$nginx_config_path"
 
 #=================================================
 # CREATE DEDICATED USER
@@ -182,11 +187,14 @@ ynh_replace_string \
     --replace_string="<meta name=\"zusam:default-lang\" content=\"$language\">" \
     --target_file="$final_path/public/index.html"
 
-# preparing databse
+# preparing database
 "php${phpversion}" "$final_path/api/bin/console" zusam:init "$YNH_APP_ARG_LOGIN" "$YNH_APP_ARG_GROUP" "$YNH_APP_ARG_PASSWORD"
 
 # ensure that the var directory is present
 mkdir -p "$final_path/api/var"
+
+# remove some extra files
+rm -rf "$final_path"/{readme,documentation,container,app}
 
 #=================================================
 # STORE THE CONFIG FILE CHECKSUM
