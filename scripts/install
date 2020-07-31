@@ -116,6 +116,16 @@ else
   ynh_add_fpm_config --phpversion="$phpversion" --package="$php_extensions"
 fi
 
+ynh_replace_string \
+    --match_string="upload_max_filesize = 2M" \
+    --replace_string="upload_max_filesize = 2048M" \
+    --target_file="/etc/php/$phpversion/fpm/php.ini"
+
+ynh_replace_string \
+    --match_string="post_max_size = 8M" \
+    --replace_string="post_max_size = 2048M" \
+    --target_file="/etc/php/$phpversion/fpm/php.ini"
+
 #=================================================
 # SPECIFIC SETUP
 #=================================================
