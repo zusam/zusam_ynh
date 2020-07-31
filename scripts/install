@@ -87,9 +87,6 @@ ynh_app_setting_set --app="$app" --key=phpversion --value="$phpversion"
 ynh_script_progression --message="Installing general dependencies..." --time --weight=2
 ynh_install_app_dependencies "$pkg_dependencies"
 
-ynh_script_progression --message="Installing php and php extensions..." --time --weight=50
-ynh_install_php --phpversion="$phpversion" --package="$php_extensions"
-
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
@@ -113,7 +110,11 @@ ynh_system_user_create --username="$app"
 # PHP-FPM CONFIGURATION
 #=================================================
 ynh_script_progression --message="Configuring php-fpm..." --time --weight=3
-ynh_add_fpm_config --phpversion="$phpversion" --package="$php_extensions"
+if [ "$(ynh_get_debian_release)" = "buster" ]; then
+  ynh_add_fpm_config --package="$php_extensions"
+else
+  ynh_add_fpm_config --phpversion="$phpversion" --package="$php_extensions"
+fi
 
 #=================================================
 # SPECIFIC SETUP
