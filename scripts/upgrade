@@ -72,14 +72,15 @@ ynh_add_nginx_config
 ynh_script_progression --message="Upgrading dependencies..." --weight=6
 ynh_install_app_dependencies "$pkg_dependencies"
 
-ynh_script_progression --message="Installing php and php extensions..." --time --weight=50
-ynh_install_php --phpversion="$phpversion" --package="$php_extensions"
-
 #=================================================
 # PHP-FPM CONFIGURATION
 #=================================================
 ynh_script_progression --message="Upgrading php-fpm configuration..."
-ynh_add_fpm_config --phpversion="$phpversion" --package="$php_extensions"
+if [ "$(ynh_get_debian_release)" = "buster" ]; then
+  ynh_add_fpm_config --package="$php_extensions"
+else
+  ynh_add_fpm_config --phpversion="$phpversion" --package="$php_extensions"
+fi
 
 #=================================================
 # SPECIFIC UPGRADE
