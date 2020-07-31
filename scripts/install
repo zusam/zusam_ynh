@@ -62,7 +62,7 @@ fail2ban_filter_path="/etc/fail2ban/filter.d/$app.conf"
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
-ynh_script_progression --message="Validating installation parameters..." --time --weight=1
+ynh_script_progression --message="Validating installation parameters..." --time --weight=2
 
 final_path="/var/www/$app"
 test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
@@ -73,7 +73,7 @@ ynh_webpath_register --app="$app" --domain="$domain" --path_url="$path_url"
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
-ynh_script_progression --message="Storing installation settings..." --time --weight=1
+ynh_script_progression --message="Storing installation settings..." --time --weight=2
 
 ynh_app_setting_set --app="$app" --key=domain --value="$domain"
 ynh_app_setting_set --app="$app" --key=path_url --value="$path_url"
@@ -84,7 +84,7 @@ ynh_app_setting_set --app="$app" --key=phpversion --value="$phpversion"
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Installing general dependencies..." --time --weight=1
+ynh_script_progression --message="Installing general dependencies..." --time --weight=2
 ynh_install_app_dependencies "$pkg_dependencies"
 
 ynh_script_progression --message="Installing php and php extensions..." --time --weight=50
@@ -106,7 +106,7 @@ ynh_add_nginx_config
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Configuring system user..." --time --weight=1
+ynh_script_progression --message="Configuring system user..." --time --weight=2
 ynh_system_user_create --username="$app"
 
 #=================================================
@@ -118,7 +118,7 @@ ynh_add_fpm_config --phpversion="$phpversion" --package="$php_extensions"
 #=================================================
 # SPECIFIC SETUP
 #=================================================
-ynh_script_progression --message="Copying default config..." --time --weight=1
+ynh_script_progression --message="Copying default config..." --time --weight=2
 
 # Copy the general .env file as a starter config file
 cp "$final_path/api/.env" "$final_path/data/config"
@@ -126,7 +126,7 @@ cp "$final_path/api/.env" "$final_path/data/config"
 #=================================================
 # MODIFY A CONFIG FILE
 #=================================================
-ynh_script_progression --message="Modifying config..." --time --weight=1
+ynh_script_progression --message="Modifying config..." --time --weight=2
 
 # switch the APP_ENV to prod
 ynh_replace_string \
@@ -163,7 +163,7 @@ echo "MAILER_URL=smtp://localhost:25" >> "$final_path/data/config"
 #=================================================
 # SPECIFIC SETUP
 #=================================================
-ynh_script_progression --message="Deploying Zusam..." --time --weight=1
+ynh_script_progression --message="Deploying Zusam..." --time --weight=2
 
 # copy webapp files
 cp -r "$final_path"/app/dist/* "$final_path/public/"
@@ -194,7 +194,10 @@ ynh_replace_string \
 mkdir -p "$final_path/api/var"
 
 # remove some extra files
-rm -rf "$final_path"/{readme,documentation,container,app}
+ynh_secure_remove "$final_path/readme"
+ynh_secure_remove "$final_path/documentation"
+ynh_secure_remove "$final_path/container"
+ynh_secure_remove "$final_path/app"
 
 #=================================================
 # STORE THE CONFIG FILE CHECKSUM
@@ -210,15 +213,16 @@ ynh_store_file_checksum --file="$final_path/data/config"
 set_app_permissions
 
 #=================================================
-# SETUP SSOWAT
+# SETUP APP PERMISSIONS
 #=================================================
-ynh_script_progression --message="Configuring SSOwat..." --time --weight=15
+ynh_script_progression --message="Configuring permissions..." --time --weight=15
 
 # Make app public if necessary
 if [ $is_public -eq 1 ]
 then
     # unprotected_uris allows SSO credentials to be passed anyway.
-    ynh_app_setting_set --app="$app" --key=unprotected_uris --value="/"
+    #ynh_app_setting_set --app="$app" --key=unprotected_uris --value="/"
+    yunohost user permission update "$app.main" --add visitors
 fi
 
 #=================================================

@@ -107,7 +107,10 @@ cp -r "$final_path"/app/dist/* "$final_path/public/"
 mkdir -p "$final_path/api/var"
 
 # remove some extra files
-rm -rf "$final_path"/{readme,documentation,container,app}
+ynh_secure_remove "$final_path/readme"
+ynh_secure_remove "$final_path/documentation"
+ynh_secure_remove "$final_path/container"
+ynh_secure_remove "$final_path/app"
 
 #=================================================
 # GENERIC FINALIZATION

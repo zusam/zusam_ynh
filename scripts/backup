@@ -30,8 +30,12 @@ load_app_settings
 ynh_script_progression --message="Backing up the main app directory..."
 
 # remove some extra files
-rm -rf "$final_path"/{readme,documentation,container,app}
-rm -rf "$final_path"/api/{vendor,.composer}
+ynh_secure_remove "$final_path/readme"
+ynh_secure_remove "$final_path/documentation"
+ynh_secure_remove "$final_path/container"
+ynh_secure_remove "$final_path/app"
+ynh_secure_remove "$final_path/api/vendor"
+ynh_secure_remove "$final_path/api/.composer"
 
 ynh_backup --src_path="$final_path"
 
