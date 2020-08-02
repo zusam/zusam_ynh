@@ -22,7 +22,7 @@ str_remove_trailing() {
 }
 
 load_app_settings() {
-  ynh_script_progression --message="Loading installation settings..." --weight=1
+  ynh_script_progression --message="Loading installation settings..."
 
   app="$YNH_APP_INSTANCE_NAME"
   version="$(ynh_app_upstream_version)"
