@@ -6,7 +6,7 @@
         "en": "A truly private space for you and your friends.",
         "fr": "Un espace privé pour vous et vos amis."
     },
-    "version": "0.4.1~ynh1",
+    "version": "0.4.2~ynh1",
     "url": "https://zusam.org",
     "license": "AGPL-3.0",
     "maintainer": {

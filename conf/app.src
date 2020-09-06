@@ -1,6 +1,6 @@
-SOURCE_URL=https://github.com/zusam/zusam/archive/0.4.1.zip
+SOURCE_URL=https://github.com/zusam/zusam/archive/0.4.2.zip
 SOURCE_SUM_PRG=sha256sum
 SOURCE_FORMAT=zip
 SOURCE_IN_SUBDIR=true
-SOURCE_FILENAME=0.4.1.zip
-SOURCE_SUM=1745c4fc97e2daa094d632f29cdfd5f28c3e4bb32855fb7e0b4e15595b108246
+SOURCE_FILENAME=0.4.2.zip
+SOURCE_SUM=eb54adda5347c3b7c233aa414c5ef1f6637b08db162cc67e6337f16ec39aa515
