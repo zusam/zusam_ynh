@@ -6,8 +6,8 @@
 # IMPORT GENERIC HELPERS
 #=================================================
 
-source ../settings/scripts/_common.sh
-source ../settings/scripts/composer
+source _common.sh
+source composer
 source /usr/share/yunohost/helpers
 
 #=================================================
