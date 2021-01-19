@@ -105,7 +105,7 @@ ynh_system_user_create --username="$app"
 # PHP-FPM CONFIGURATION
 #=================================================
 ynh_script_progression --message="Configuring php-fpm..." --weight=3
-if [ "$(ynh_get_debian_release)" = "buster" ]; then
+if is_phpfpm_installed "$phpversion"; then
   ynh_add_fpm_config --package="$php_extensions"
 else
   ynh_add_fpm_config --phpversion="$phpversion" --package="$php_extensions"

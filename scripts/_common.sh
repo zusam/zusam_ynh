@@ -21,6 +21,10 @@ str_remove_trailing() {
   echo "$1" | sed -E "s/$char+$//"
 }
 
+is_phpfpm_installed() {
+  dpkg -s "php$1-fpm" >/dev/null 2>/dev/null
+}
+
 load_app_settings() {
   ynh_script_progression --message="Loading installation settings..."
 

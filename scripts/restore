@@ -71,7 +71,11 @@ ynh_script_progression --message="Reinstalling dependencies..." --weight=13
 ynh_install_app_dependencies "$pkg_dependencies"
 
 ynh_script_progression --message="Installing php and php extensions..." --weight=50
-ynh_install_php --phpversion="$phpversion" --package="$php_extensions"
+if is_phpfpm_installed "$phpversion"; then
+  ynh_add_fpm_config --package="$php_extensions"
+else
+  ynh_add_fpm_config --phpversion="$phpversion" --package="$php_extensions"
+fi
 
 # install api dependencies
 ynh_composer_exec \
