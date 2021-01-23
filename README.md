@@ -1,6 +1,8 @@
 *This package allow you to install Zusam quickly and simply on a YunoHost server.  
 If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to know how to install and enjoy it.*
 
+## :warning: This is an alpha release. Things are not working properly. Use at your own risk.
+
 ## Overview
 Zusam (/tsuˈzam/) is a free and open-source way to self-host private forums for groups of friends. Composed of a server written in PHP exposing a REST API and a lightweight webapp, Zusam is extensible and easy to install.
 The goal is to make a stable, extensible, lightweight and user-friendly way to self-host private social groups.
