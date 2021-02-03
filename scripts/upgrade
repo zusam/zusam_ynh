@@ -95,6 +95,9 @@ if [ -f "$final_path/api/migrations/$version.sql" ]; then
   sqlite3 "$final_path/data/data.db" < "$final_path/api/migrations/$version.sql"
 fi
 
+# copy webapp files
+cp -r "$final_path"/app/dist/* "$final_path/public/"
+
 # install api dependencies
 ynh_composer_exec \
     --phpversion="$phpversion" \
@@ -102,17 +105,10 @@ ynh_composer_exec \
     --composer="$final_path/api/bin/composer" \
     --commands="install"
 
-# copy webapp files
-cp -r "$final_path"/app/dist/* "$final_path/public/"
+set_app_webapp "$final_path" "$path_name" "$language"
 
 # ensure that the var directory is present
 mkdir -p "$final_path/api/var"
-
-# remove some extra files
-ynh_secure_remove "$final_path/readme"
-ynh_secure_remove "$final_path/documentation"
-ynh_secure_remove "$final_path/container"
-ynh_secure_remove "$final_path/app"
 
 #=================================================
 # GENERIC FINALIZATION
@@ -121,18 +117,6 @@ ynh_secure_remove "$final_path/app"
 #=================================================
 
 set_app_permissions
-
-#=================================================
-# SETUP SSOWAT
-#=================================================
-ynh_script_progression --message="Upgrading SSOwat configuration..." --weight=2
-
-# Make app public if necessary
-if [ $is_public -eq 1 ]
-then
-    # unprotected_uris allows SSO credentials to be passed anyway.
-    ynh_app_setting_set --app="$app" --key=unprotected_uris --value="/"
-fi
 
 #=================================================
 # RELOAD NGINX AND PHP-FPM
