@@ -75,3 +75,17 @@ set_app_permissions() {
   chown -R www-data: "$final_path/api/var"
   chown -R www-data: "$final_path/public"
 }
+
+set_app_webapp() {
+  # set the PATH of the webapp
+  ynh_replace_string \
+      --match_string="<base href=\"/\">" \
+      --replace_string="<base href=\"/$2/\">" \
+      --target_file="$1/public/index.html"
+
+  # set the default lang of the webapp
+  ynh_replace_string \
+      --match_string="<meta name=\"zusam:default-lang\" content=\"en\">" \
+      --replace_string="<meta name=\"zusam:default-lang\" content=\"$3\">" \
+      --target_file="$1/public/index.html"
+}
