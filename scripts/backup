@@ -29,14 +29,6 @@ load_app_settings
 #=================================================
 ynh_script_progression --message="Backing up the main app directory..."
 
-# remove some extra files
-ynh_secure_remove "$final_path/readme"
-ynh_secure_remove "$final_path/documentation"
-ynh_secure_remove "$final_path/container"
-ynh_secure_remove "$final_path/app"
-ynh_secure_remove "$final_path/api/vendor"
-ynh_secure_remove "$final_path/api/.composer"
-
 ynh_backup --src_path="$final_path"
 
 #=================================================
@@ -52,14 +44,6 @@ ynh_backup --src_path="$nginx_config_path"
 ynh_script_progression --message="Backing up php-fpm configuration..."
 
 ynh_backup --src_path="$php_fpm_config_path"
-
-#=================================================
-# BACKUP FAIL2BAN CONFIGURATION
-#=================================================
-ynh_script_progression --message="Backing up fail2ban configuration..."
-
-ynh_backup --src_path="$fail2ban_jail_path"
-ynh_backup --src_path="$fail2ban_filter_path"
 
 #=================================================
 # END OF SCRIPT

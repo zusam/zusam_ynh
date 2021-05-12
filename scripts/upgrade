@@ -7,7 +7,6 @@
 #=================================================
 
 source _common.sh
-source composer
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -90,20 +89,25 @@ fi
 #=================================================
 ynh_script_progression --message="Upgrading zusam..." --weight=2
 
+ynh_script_progression --message="Preparing database..." --weight=1
+
 # database migration
 if [ -f "$final_path/api/migrations/$version.sql" ]; then
   sqlite3 "$final_path/data/data.db" < "$final_path/api/migrations/$version.sql"
 fi
 
-# copy webapp files
+ynh_script_progression --message="Copying webapp files..." --weight=1
+
 cp -r "$final_path"/app/dist/* "$final_path/public/"
 
-# install api dependencies
-ynh_composer_exec \
+ynh_script_progression --message="Installing API dependencies..." --weight=3
+
+ynh_install_composer \
     --phpversion="$phpversion" \
-    --workdir="$final_path/api/" \
-    --composer="$final_path/api/bin/composer" \
-    --commands="install"
+    --workdir="$final_path/api" \
+    --install_args="--prefer-dist"
+
+ynh_script_progression --message="Additional preparations..." --weight=1
 
 set_app_webapp "$final_path" "$path_name" "$language"
 
