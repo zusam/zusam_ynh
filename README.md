@@ -1,19 +1,19 @@
 *This package allow you to install Zusam quickly and simply on a YunoHost server.  
 If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to know how to install and enjoy it.*
 
-## :warning: This is an alpha release. Things are not working properly. Use at your own risk.
+## :warning: This is an alpha release. Things can go wrong. Use at your own risk.
 
 This package is still in a very early stage and not well tested. Please make sure to have a personal backup ready in case of things go wrong (do not rely solely on the backup of Yunohost for now).  
 Fortunately, Zusam is easy to backup and restore by hand. The only concerned directory is the `data` dir that is located under `/var/www/zusam` by default.
 
 ### Status
 
-- Install: should work
-- Backup: should work
-- Upgrade: should work
-- Restore: not tested
-- Changing URL: doesn't work
-- Remove: not tested
+- [x] Install
+- [x] Backup
+- [x] Upgrade
+- [x] Restore
+- [ ] Changing URL
+- [x] Remove
 
 ## Overview
 
