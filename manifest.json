@@ -6,7 +6,7 @@
         "en": "A truly private space for you and your friends.",
         "fr": "Un espace privé pour vous et vos amis."
     },
-    "version": "0.4.3~ynh2",
+    "version": "0.4.5~ynh2",
     "url": "https://zusam.org",
     "license": "AGPL-3.0",
     "maintainer": {
@@ -15,7 +15,7 @@
         "url": "https://niels.fr"
     },
     "requirements": {
-        "yunohost": ">= 4.0.0"
+        "yunohost": ">= 4.2.0"
     },
     "multi_instance": true,
     "services": [

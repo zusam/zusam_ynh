@@ -7,7 +7,6 @@
 #=================================================
 
 source ../settings/scripts/_common.sh
-source ../settings/scripts/composer
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -77,27 +76,16 @@ else
   ynh_add_fpm_config --phpversion="$phpversion" --package="$php_extensions"
 fi
 
-# install api dependencies
-ynh_composer_exec \
+ynh_install_composer \
     --phpversion="$phpversion" \
-    --workdir="$final_path/api/" \
-    --composer="$final_path/api/bin/composer" \
-    --commands="install"
+    --workdir="$final_path/api" \
+    --install_args="--prefer-dist"
 
 #=================================================
 # RESTORE USER RIGHTS
 #=================================================
 
 set_app_permissions
-
-#=================================================
-# RESTORE FAIL2BAN CONFIGURATION
-#=================================================
-ynh_script_progression --message="Restoring the fail2ban configuration..." --weight=8
-
-ynh_restore_file "$fail2ban_jail_path"
-ynh_restore_file "$fail2ban_filter_path"
-ynh_systemd_action --action=restart --service_name=fail2ban
 
 #=================================================
 # GENERIC FINALIZATION

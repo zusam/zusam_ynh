@@ -6,7 +6,6 @@
 # IMPORT HELPERS
 #=================================================
 source _common.sh
-source composer
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -27,7 +26,8 @@ path_url="$YNH_APP_ARG_PATH"
 is_public=1 # true
 language="$YNH_APP_ARG_LANGUAGE"
 
-phpversion="7.3"
+# phpversion can be changed but it's better to keep the default one
+phpversion="${YNH_DEFAULT_PHP_VERSION}"
 
 # necessary for the official php helper
 YNH_PHP_VERSION="$phpversion"
@@ -47,12 +47,6 @@ path_url="$(ynh_normalize_url_path --path_url="$path_url")"
 
 # Remove leading "/"
 path_name="$(str_remove_leading "$path_url" '\/')"
-
-# Standard yunohost paths
-nginx_config_path="/etc/nginx/conf.d/$domain.d/$app.conf"
-php_fpm_config_path="/etc/php/$phpversion/fpm/pool.d/$app.conf"
-fail2ban_jail_path="/etc/fail2ban/jail.d/$app.conf"
-fail2ban_filter_path="/etc/fail2ban/filter.d/$app.conf"
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
@@ -79,13 +73,13 @@ ynh_app_setting_set --app="$app" --key=phpversion --value="$phpversion"
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Installing general dependencies..." --weight=2
+ynh_script_progression --message="Installing general dependencies..." --weight=4
 ynh_install_app_dependencies "$pkg_dependencies"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_script_progression --message="Setting up source files..." 00
+ynh_script_progression --message="Setting up source files..." --weight=1
 ynh_app_setting_set --app="$app" --key=final_path --value="$final_path"
 ynh_setup_source --dest_dir="$final_path"
 
@@ -169,22 +163,25 @@ echo "MAILER_URL=smtp://localhost:25" >> "$final_path/data/config"
 #=================================================
 # SPECIFIC SETUP
 #=================================================
-ynh_script_progression --message="Deploying Zusam..." --weight=2
+ynh_script_progression --message="Copying webapp files..." --weight=1
 
-# copy webapp files
 cp -r "$final_path"/app/dist/* "$final_path/public/"
 
-# install api dependencies
-ynh_composer_exec \
+ynh_script_progression --message="Installing API dependencies..." --weight=3
+
+ynh_install_composer \
     --phpversion="$phpversion" \
-    --workdir="$final_path/api/" \
-    --composer="$final_path/api/bin/composer" \
-    --commands="install"
+    --workdir="$final_path/api" \
+    --install_args="--prefer-dist"
+
+ynh_script_progression --message="Additional preparations..." --weight=1
 
 set_app_webapp "$final_path" "$path_name" "$language"
 
 # ensure that the var directory is present
 mkdir -p "$final_path/api/var"
+
+ynh_script_progression --message="Preparing database..." --weight=1
 
 # preparing database
 "php${phpversion}" "$final_path/api/bin/console" zusam:init "$YNH_APP_ARG_LOGIN" "$YNH_APP_ARG_GROUP" "$YNH_APP_ARG_PASSWORD"
@@ -205,7 +202,7 @@ set_app_permissions
 #=================================================
 # SETUP APP PERMISSIONS
 #=================================================
-ynh_script_progression --message="Configuring permissions..." 5
+ynh_script_progression --message="Configuring permissions..." --weight=1
 
 # Make app public if necessary
 if [ $is_public -eq 1 ]
